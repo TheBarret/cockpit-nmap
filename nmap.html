@@ -1,0 +1,59 @@
+<head>
+    <title>Nmap</title>
+    <meta charset="utf-8">
+    <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+    <script src="../base1/jquery.js"></script>
+    <script src="../base1/cockpit.js"></script>
+</head>
+<body>
+    <div class="container-fluid" style='max-width: 1000px'>
+	<h1>Nmap</h1>
+        <table class="cockpit-form-table">
+            <tr>
+                <td><input class="form-control" id="address" value="127.0.0.1" size="60"></td>
+		<td><button class="btn btn-default btn-primary" id="scan">Scan</button></td>
+            </tr>
+            <tr>
+		<td><span id="result"></span></td>
+            </tr>
+        </table>
+        <p>
+	    <pre id="output"></pre>
+        </p>
+	<font size="-2">nmap plugin made by barret</font>
+    </div>
+
+    <script>
+        var address = $("#address");
+        var output = $("#output");
+        var result = $("#result");
+
+        $("#scan").on("click", nmap_run);
+
+        function nmap_run() {
+            var proc = cockpit.spawn(["nmap", "-v", "-Pn", "-T5", "--host-timeout", "10", "--max-retries", "0", address.val()]);
+            proc.done(nmap_success);
+            proc.stream(nmap_output);
+            proc.fail(nmap_fail);
+
+            result.empty();
+            output.empty();
+        }
+
+        function nmap_success() {
+            result.css("color", "green");
+            result.text("success");
+        }
+
+        function nmap_fail() {
+            result.css("color", "red");
+            result.text("fail");
+        }
+
+        function nmap_output(data) {
+            output.append(document.createTextNode(data));
+        }
+    </script>
+</body>
+</html>
+
